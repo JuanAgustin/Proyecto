@@ -65,3 +65,5 @@ data Omega : Set where
   Abort :  (State) -> Omega
   Out   : ℕ -> Omega -> Omega
   In    : String -> (ℕ -> Omega) -> Omega
+
+

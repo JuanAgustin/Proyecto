@@ -22,10 +22,7 @@ zero  lt suc n = true
 suc n lt zero  = false
 suc n lt suc m = n lt m
 
-[_]' : Type → Set
-[ nat ]'     = ℕ
-[ bool ]'    = Bool
-[ command ]' = Omega
+
 
 star : (f :  State -> Omega) -> Omega -> Omega
 star f (Term st)  = f st
@@ -44,6 +41,11 @@ mas f (Term st)  = Term st
 mas f (Abort st) = f st
 mas f (Out n w)    = Out n (mas f w)
 mas f (In v g)     = In v (\ n -> mas f (g n))
+
+[_]' : Type → Set
+[ nat ]'     = ℕ
+[ bool ]'    = Bool
+[ command ]' = Omega
 
 [[_]] : ∀ {t} -> Expr t → (st : State) → [ t ]'
 [[ const x ]] st     = x

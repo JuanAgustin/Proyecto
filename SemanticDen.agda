@@ -64,7 +64,7 @@ mas f (In v g)     = In v (\ n -> mas f (g n))
 [[ opNeq a b ]] st   =  [[ a ]] st neq [[ b ]] st
 [[ Lt a b ]] st      = [[ a ]] st lt [[ b ]] st
 [[ Skip ]] st        = Term st
-[[ Morite ]] st      = Abort st
+[[ Fail ]] st      = Abort st
 [[ Assign v e ]] st  = Term (set st v ([[ e ]] st))
 [[ If b c1 c2 ]] st with [[ b ]] st
 ... | true  = [[ c1 ]] st

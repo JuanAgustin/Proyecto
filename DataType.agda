@@ -50,7 +50,7 @@ data Expr : Type → Set where
   opNeq   : Expr nat → Expr nat → Expr bool
   Lt       : Expr nat → Expr nat → Expr bool
   Skip     : Expr command
-  Morite   : Expr command
+  Fail   : Expr command
   Assign   : String -> Expr nat -> Expr command
   If       : Expr bool -> Expr command -> Expr command -> Expr command
   Seq      : Expr command -> Expr command -> Expr command

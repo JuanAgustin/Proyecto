@@ -44,6 +44,12 @@ data State : List ℕ -> Set where
   _⟼_,_   : forall {ls} ->
             String -> (n : ℕ) -> State ls -> State (n :: ls)
 
+
+data State' : Set where
+  ε        : State'
+  _⟼_,_   : String -> (n : ℕ) -> State' -> State'
+
+
 _∈_ : forall {ls} -> String -> State ls -> Bool
 s ∈ ε      = false
 s ∈ (s' ⟼ _ , st) with s == s'
@@ -58,18 +64,18 @@ get s (s' ⟼ n , st) p with s == s'
 
 
 {- Si la variable no se encuentra en el estado, devuelvo 'cero' -}
-get : {ls : List ℕ}(s : String)(st : State ls) -> ℕ
+get : (s : String)(st : State') -> ℕ
 get s ε = 0
 get s (s' ⟼ n , st) with s == s'
 ... | true  = n
 ... | false = get s st
  
 
-{-set : {ls : List ℕ}{ls' : List ℕ}(st : State ls)(s : String)(n : ℕ) -> State ls'
+set : (st : State')(s : String)(n : ℕ) -> State'
 set ε s n = s ⟼ n , ε
 set (s' ⟼ n' , st) s n with s == s'
 ... | true  = s ⟼ n , st
-... | false = s' ⟼ n' , set st s n-}
+... | false = s' ⟼ n' , set st s n
 
 
 
@@ -98,18 +104,18 @@ data Expr : Type → Set where
   Lt       : Expr nat → Expr nat → Expr bool
   Skip     : Expr command
   Morite   : Expr command
- {- Assign   : String -> Expr nat -> Expr command-}
+  Assign   : String -> Expr nat -> Expr command
   If       : Expr bool -> Expr command -> Expr command -> Expr command
   Seq      : Expr command -> Expr command -> Expr command
-{- Newvar  : String -> Expr nat -> Expr command -}
-{- Dame    : String -> Expr command-}
+  Newvar  : String -> Expr nat -> Expr command -> Expr command
+  Dame    : String -> Expr command
   Toma     : Expr nat -> Expr command
   Agarrame : Expr command -> Expr command -> Expr command
 
 
 data Omega : Set where
-  Term  : {ls : List ℕ} -> (State ls) -> Omega
-  Abort : {ls : List ℕ} -> (State ls) -> Omega
+  Term  :  (State') -> Omega
+  Abort :  (State') -> Omega
   Out   : ℕ -> Omega -> Omega
   In    : String -> (ℕ -> Omega) -> Omega
   
@@ -119,25 +125,25 @@ data Omega : Set where
 [ bool ]'    = Bool
 [ command ]' = Omega
 
-star : (f : {ls : List ℕ} -> State ls -> Omega) -> Omega -> Omega
+star : (f :  State' -> Omega) -> Omega -> Omega
 star f (Term st)  = f st
 star f (Abort st) = Abort st
 star f (Out n w)  = Out n (star f w)
 star f (In v g)   = In v (\ n -> star f (g n))
 
-dagger : (f : {ls : List ℕ} -> State ls -> State ls) -> Omega -> Omega
+dagger : (f :  State' -> State') -> Omega -> Omega
 dagger f (Term st)  = Term (f st)
 dagger f (Abort st) = Abort (f st)
 dagger f (Out n w)  = Out n (dagger f w)
 dagger f (In v w)   = In v (\ n -> dagger f (w n))
 
-mas : (f : {ls : List ℕ} -> State ls -> Omega) -> Omega -> Omega
+mas : (f : State' -> Omega) -> Omega -> Omega
 mas f (Term st)  = Term st
 mas f (Abort st) = f st
 mas f (Out n w)    = Out n (mas f w)
 mas f (In v g)     = In v (\ n -> mas f (g n))
 
-[[_]] : ∀ {t} {ls : List ℕ} → Expr t → (st : State ls) → [ t ]'
+[[_]] : ∀ {t} -> Expr t → (st : State') → [ t ]'
 [[ const x ]] st     = x
 [[ var s ]] st       = get s st
 {-[[ neg a ]] st     = - [[ a ]] st-}
@@ -155,13 +161,13 @@ mas f (In v g)     = In v (\ n -> mas f (g n))
 [[ Lt a b ]] st      = [[ a ]] st lt [[ b ]] st
 [[ Skip ]] st        = Term st
 [[ Morite ]] st      = Abort st
-{- [[ Assign v e ]] st  = Me falta el set! -}
+[[ Assign v e ]] st  = Term (set st v ([[ e ]] st))
 [[ If b c1 c2 ]] st with [[ b ]] st
 ... | true  = [[ c1 ]] st
 ... | false = [[ c2 ]] st
 [[ Seq c1 c2 ]] st    = star [[ c2 ]] ([[ c1 ]] st)
-{-[[ Newvar v e c ]] st = dagger (\ st' -> set st' v (get st v)) ([[ c ]] (set st v ([[ e ]] st))) -}
-{-[[ Dame v ]] st       = In v (\ n -> Term (set st v n)) -}
+[[ Newvar v e c ]] st = dagger (\ st' -> set st' v (get v st)) ([[ c ]] (set st v ([[ e ]] st))) 
+[[ Dame v ]] st       = In v (\ n -> Term (set st v n))
 [[ Toma v ]] st         = Out ([[ v ]] st) (Term st)
 [[ Agarrame c1 c2 ]] st = mas [[ c2 ]] ( [[ c1 ]] st )
 

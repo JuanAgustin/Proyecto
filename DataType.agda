@@ -9,7 +9,7 @@ data List (A : Set) : Set where
   _::_  : A -> List A -> List A
 
 data _×_ (A B : Set) : Set where
-  _,_ : A → B → A × B
+ <_,_> : A → B → A × B
 
 data Type : Set where
   bool : Type

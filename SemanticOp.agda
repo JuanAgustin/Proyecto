@@ -48,8 +48,9 @@ data _⇝*_ : (Expr command × State) ⊎ Omega -> (Expr command × State) ⊎ O
 
 
 {- DEFINICION (No me dejaba usar {{ _ }}) -}
+{-
+¿¿_?? : {{om : Omega}} → (comm : Expr command) → (st : State) → {{p : (inj₁ < comm , st >) ⇝* (inj₂ om) }} → Omega
+¿¿ comm ?? st {{ p }} = om
 
-¿¿_?? : {{om : Omega}} → (comm : Expr command) → (st : State) → {{p : < comm , st > ⇝* om }} → Omega
-¿¿ comm ?? st = om
-
+-}
 

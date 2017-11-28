@@ -27,20 +27,26 @@ suc n lt suc m = n lt m
 star : (f :  State -> Omega) -> Omega -> Omega
 star f (Term st)  = f st
 star f (Abort st) = Abort st
+{-
 star f (Out n w)  = Out n (star f w)
 star f (In v g)   = In v (\ n -> star f (g n))
+-}
 
 dagger : (f :  State -> State) -> Omega -> Omega
 dagger f (Term st)  = Term (f st)
 dagger f (Abort st) = Abort (f st)
+{-
 dagger f (Out n w)  = Out n (dagger f w)
 dagger f (In v w)   = In v (\ n -> dagger f (w n))
+-}
 
 mas : (f : State -> Omega) -> Omega -> Omega
 mas f (Term st)  = Term st
 mas f (Abort st) = f st
+{-
 mas f (Out n w)    = Out n (mas f w)
 mas f (In v g)     = In v (\ n -> mas f (g n))
+-}
 
 [_]' : Type → Set
 [ nat ]'     = ℕ
@@ -71,6 +77,6 @@ mas f (In v g)     = In v (\ n -> mas f (g n))
 ... | false = [[ c2 ]] st
 [[ Seq c1 c2 ]] st    = star [[ c2 ]] ([[ c1 ]] st)
 [[ Newvar v e c ]] st = dagger (\ st' -> set st' v (get v st)) ([[ c ]] (set st v ([[ e ]] st))) 
-[[ Dame v ]] st       = In v (\ n -> Term (set st v n))
-[[ Toma v ]] st         = Out ([[ v ]] st) (Term st)
+{-[[ Dame v ]] st       = In v (\ n -> Term (set st v n))
+[[ Toma v ]] st         = Out ([[ v ]] st) (Term st)-}
 [[ Agarrame c1 c2 ]] st = mas [[ c2 ]] ( [[ c1 ]] st )

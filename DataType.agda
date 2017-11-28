@@ -55,15 +55,16 @@ data Expr : Type → Set where
   If       : Expr bool -> Expr command -> Expr command -> Expr command
   Seq      : Expr command -> Expr command -> Expr command
   Newvar  : String -> Expr nat -> Expr command -> Expr command
-  Dame    : String -> Expr command
-  Toma     : Expr nat -> Expr command
+{-  Dame    : String -> Expr command
+  Toma     : Expr nat -> Expr command-}
   Agarrame : Expr command -> Expr command -> Expr command
 
 
 data Omega : Set where
   Term  :  (State) -> Omega
   Abort :  (State) -> Omega
+{-  
   Out   : ℕ -> Omega -> Omega
   In    : String -> (ℕ -> Omega) -> Omega
-
+-}
 

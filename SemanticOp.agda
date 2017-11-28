@@ -47,10 +47,9 @@ data _⇝*_ : (Expr command × State) ⊎ Omega -> (Expr command × State) ⊎ O
   CInd : (y₀ y₁ y₂ : (Expr command × State) ⊎ Omega) -> y₀ ⇝* y₁ -> y₁ ⇝* y₂ -> y₀ ⇝* y₂ 
 
 
-{- CLAUSURA TRANSITIVA (No me dejaba usar {{ _ }}) 
+{- DEFINICION (No me dejaba usar {{ _ }}) -}
 
-¿¿_?? : (< cmd, st > : Expr command × State) -> {{p : < cmd , st > ⇝* st₁ }} -> Omega
-¿¿ < cmd , st > ?? = st₁
--}
+¿¿_?? : {{om : Omega}} → (comm : Expr command) → (st : State) → {{p : < comm , st > ⇝* om }} → Omega
+¿¿ comm ?? st = om
 
 
